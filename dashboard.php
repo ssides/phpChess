@@ -32,7 +32,6 @@
                 <td>
                   <form action="" method="post">
                     <input type="hidden" name="gameid" id="gameid" data-bind="value: gameID">
-                    <input type="hidden" name="identifier" id="identifier" data-bind="value: position">
                     <button type="submit" name="join" id="join" class="btn btn-outline-primary">Join</button>
                   </form>
                 </td>
@@ -48,7 +47,6 @@
                 <td>
                   <form action="" method="post">
                     <input type="hidden" name="gameid" id="gameid" data-bind="value: gameID">
-                    <input type="hidden" name="identifier" id="identifier" data-bind="value: position">
                     <button type="submit" name="rejoin" id="rejoin" class="btn btn-outline-primary">Return</button>
                   </form>
                 </td>

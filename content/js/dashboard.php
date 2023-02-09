@@ -19,24 +19,26 @@
 
     self.getInvitations = function() {
       if (!self.invitationInProgress) {
-        self.invitationInProgress = true;
         console.log('getInvitations()');
+        self.invitationInProgress = true;
         var postData = { <?php echo $cookieName.':'."'{$_COOKIE[$cookieName]}'" ?> };
         $.ajax({
           method: 'POST',
           url: 'api/getInvitations.php',
           data: postData,
           success: function (response) {
-            console.log('received getInvitations response');
             let data = JSON.parse(response);
-            if (data.length > 0) {
-              var i = [];
+            if (data.ErrorMsg) {
+              console.log(data.ErrorMsg);
+            }
+            if (data.Invites.length > 0) {
+              var invites = [];
               // stop the timer and wait for the player to respond.
               clearInterval(self.invitationTimer);
-              data.forEach(function(i){
-                i.push(new game(i[0], i[1]));
+              data.Invites.forEach(function(i){
+                invites.push(new game(i[0], i[1]));
               });
-              self.invitations(i);
+              self.invitations(invites);
             }
           },
           error: function (xhr, status, error) {

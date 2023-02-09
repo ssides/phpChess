@@ -14,54 +14,35 @@
         }
       } else if (isset($_POST['join']) || isset($_POST['rejoin'])) {
         $gameID = $_POST['gameid'];
-        $identifier = $_POST['identifier'];
         $playerID = $_COOKIE[$cookieName];
       
         $_SESSION['gameID'] = $gameID;
         
-        if (strlen($sqlErr) == 0 && joinGame($gameID, $playerID, $identifier)) {
-          header("Location: play.php");
+        if (strlen($sqlErr) == 0) {
+          joinGame($gameID, $playerID);
+          if (strlen($sqlErr) == 0) {
+            header("Location: play.php");
+          }
         }
       }
     }
     
-    
-    function joinGame($gameID, $playerID, $identifier) {
-      global $connection;
+    function joinGame($gameID, $playerID) {
+      global $sqlErr,$connection;
       
-      $sql = "";
-      switch($identifier) {
-        case 'Partner':
-          $sql = "update `Game` set `PartnerJoinDate` = now() where `Partner` = '{$playerID}' and `ID` = '{$gameID}'";
-          break;
-        case 'Opponent Left':
-          $sql = "update `Game` set `LeftJoinDate` = now() where `Left` = '{$playerID}'and `ID` = '{$gameID}'";
-          break;
-        case 'Opponent Right':
-          $sql = "update `Game` set `RightJoinDate` = now() where `Right` = '{$playerID}' and `ID` = '{$gameID}'";
-          break;
-        case 'Organizer':
-          // there is nothing to do in this case.
-          $sql = "";
-          break;
-        default:
-          $sql = "";
-      };
-      
-      if (strlen($sql) > 0) {
-        return mysqli_query($connection, $sql);
-      } else {
-        return true;
+      $sql = "update `Game` set `OpponentJoinDate` = now() where `Opponent` = '{$playerID}' and `ID` = '{$gameID}'";
+      if (mysqli_query($connection, $sql) === false) {
+        $sqlErr = mysqli_error($connection);
       }
-
+      return ;
     }
     
     function startGame($playerID) {
       global $sqlErr,$connection;
       $gameID = GUID();
       $zero = 0;
-      $smt = mysqli_prepare($connection, "insert into `Game` (`ID` , `Organizer`, `OrganizerScore`, `OpponentScore`, `OrganizerTricks`,`OpponentTricks`,`InsertDate`) values (?,?,?,?,?,?,now())");
-      mysqli_stmt_bind_param($smt, 'ssiiii', $gameID, $playerID, $zero,$zero,$zero,$zero);
+      $smt = mysqli_prepare($connection, "insert into `Game` (`ID`,`Organizer`,`InsertDate`,`UpdateDate`) values (?,?,now(),now())");
+      mysqli_stmt_bind_param($smt, 'ss', $gameID, $playerID);
       if (!mysqli_stmt_execute($smt)){
         $sqlErr = mysqli_error($connection);
         $gameID = '';
