@@ -41,11 +41,11 @@ create table `Game`
   `GameFinishDate` datetime null,
   `OpponentInviteDate` datetime null, 
   `OpponentJoinDate` datetime null, 
-  `OpponentColor` char(1) null, 
+  `OpponentColor` char(1) null, -- 'W' or 'B'
   `OrganizerClock` int null,
   `OpponentClock` int null,
   `IsTimed` enum('0','1') null default '0',
-  `Turn` varchar(38) null,
+  `Turn` char(1) null,  -- O(R)ganizer or O(P)ponent
   `InsertDate` datetime not null,
   `UpdateDate` datetime not null,
   constraint `FK_GameOrganizer_Player` foreign key (`Organizer`) references `Player`(`ID`),

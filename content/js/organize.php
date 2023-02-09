@@ -13,6 +13,7 @@
     
     self.getRSVPSTimer = null;
     self.getRSVPSInProgress = false;   // lets the $.ajax() call take more than a second to complete.
+    self.isTimedGame = ko.observable(false);
     self.users = ko.observableArray();
     self.selectedOpponent = ko.observable();
     self.opponentInvited = ko.observable(false);
@@ -27,7 +28,10 @@
         url: 'api/invitePlayer.php',
         data: postData,
         success: function (response) {
-          if (response == 'OK') {
+          let data = JSON.parse(response);
+          if (data.ErrorMsg) {
+            console.log(data.ErrorMsg);
+          } else {
             self.opponentInvited(true);
           }
         },
@@ -41,12 +45,19 @@
     self.inviteOpponent = function() {
       var postData = { <?php echo $cookieName.':'."'{$_COOKIE[$cookieName]}'"
                             .",gameID:'{$_SESSION['gameID']}'"   ?>
-                ,player: this.selectedPartner().id};
+                ,player: this.selectedOpponent().id};
       self.invitePlayer(postData);
     };
-    
+
+    self.invite = function() {
+      if (!self.opponentInvited()) {
+        self.inviteOpponent();
+      }
+    };
+
     self.getRSVPs = function() {
       if (!self.getRSVPSInProgress){
+        console.log('getRSVPs()');
         self.getRSVPSInProgress = true;
         var postData = { <?php echo $cookieName.':'."'{$_COOKIE[$cookieName]}'"
                       .",gameID:'{$_SESSION['gameID']}'"   ?> };
@@ -72,17 +83,6 @@
       }
     };
     
-    self.invite = function() {
-      if (!self.opponentInvited()) {
-        self.inviteOpponent();
-      }    
-      if (!self.rightInvited()) {
-        self.inviteRight();
-      }    
-      if (!self.partnerInvited()) {
-        self.invitePartner();
-      }    
-    };
     
     self.initialize = function() {
       $.ajax({
