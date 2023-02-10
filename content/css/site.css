@@ -55,6 +55,10 @@ html,
   color: #2f3039;
 }
 
+.rank {
+  height: 50px;
+}
+
 .light {
   width: 50px;
   background: #fff;

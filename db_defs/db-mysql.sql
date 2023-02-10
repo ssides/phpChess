@@ -47,20 +47,24 @@ create table `Game`
   `IsTimed` enum('0','1') null default '0',
   `Turn` char(1) null,  -- O(R)ganizer or O(P)ponent
   `InsertDate` datetime not null,
-  `UpdateDate` datetime not null,
+  `UpdateDate` datetime null,
   constraint `FK_GameOrganizer_Player` foreign key (`Organizer`) references `Player`(`ID`),
   constraint `FK_GameOpponent_Player` foreign key (`Opponent`) references `Player`(`ID`)
  );
 
-drop table if exists `Rank`;
-create table `Rank`
+drop table if exists `Piece`;
+create table `Piece`
 (
   `ID` varchar(38) not null primary key, 
   `GameID` varchar(38) not null,
-  `Rank` varchar(1) not null, 
-  `Pieces` varchar(16) not null, 
+  `SquareID` char(2) not null, 
+  `PieceID` char(2) not null, 
+  `IsMoving` char(1) not null, -- (M)oving or move(D)
+  `IsInPlay` enum('0','1') not null default '1',
   `InsertDate` datetime not null,
-  `UpdateDate` datetime not null,
-  constraint `FK_Rank_Game` foreign key (`GameID`) references `Game`(`ID`)
+  `UpdateDate` datetime null,
+  constraint `FK_Piece_Game` foreign key (`GameID`) references `Game`(`ID`)
  );
 
+-- make sure there are never two pieces on the same square in the same game.
+create unique index ix_Piece on `Piece`(`GameID`,`SquareID`);

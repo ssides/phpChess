@@ -10,7 +10,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <link rel="stylesheet" href="./content/bootstrap-5.0.2-dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="<?php echo './content/css/site.css?v='.$version ?>">
-  <title>Sides Family Euchre - Play</title>
+  <title>Chess JS - Play</title>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script src="./content/bootstrap-5.0.2-dist/js/bootstrap.min.js"></script>
   <script src="./content/ko/knockout-3.5.1.js"></script>
@@ -23,22 +23,49 @@
   <div class="App">
     <div class="vertical-center">
       <div class="inner-block justify-content-center">
-        <div class="d-flex flex-column min-vh-100 justify-content-center align-items-center">
-
-
-          <div class="gamePlay">
-            <table>
-              <tr style="height: 50px">
-                <td class="light"></td>
-                <td class="dark"></td>
-                <td class="light"></td>
-                <td class="dark"></td>
-                <td class="light"></td>
-                <td class="dark"></td>
-                <td class="light"></td>
-                <td class="dark"></td>
-              </tr>
+        <div class="row">
+          <div class="col">
+            <div id="Board" class="gamePlay">
               <table>
+                <tbody data-bind="foreach: boardRank">
+                  <tr class="rank" data-bind="foreach: boardColumn">
+                    <td data-bind="css: color">
+                      <div data-bind="attr: {id: squareID }, event: {
+                           dragend: function(data, event) {
+                              console.log('dragend(' + event.target.id + ')');
+                              return true; },
+                           dragover: function(data, event){
+                              console.log('dragover()');
+                              event.preventDefault(); },
+                           dragenter: function(data, event){
+                              var element = $(event.target)
+                              console.log('dragenter(' + event.target.id + ')');
+                              event.preventDefault();          },
+                           dragleave: function(data, event, $index){
+                              var element = $(event.target)
+                              console.log('dragleave(' + event.target.id + ')');
+                              event.preventDefault();  },
+                           drop: function(data, event){
+                              console.log('drop()');  }
+                      }">
+                        <div class="piecePad" data-bind="visible: pieceURL().length > 0">
+                          <img draggable="true" data-bind="attr: {src: pieceURL(), id: pieceID() }, event: {
+                             dragstart: function(data, event){
+                                console.log('dragstart(' + event.target.id + ')');
+                                return true;  },
+                             }" style="width:<?php echo $pieceSize; ?>px;height:<?php echo $pieceSize; ?>px;" />
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                <tbody>
+              </table>
+            </div>
+          </div>
+          <div class="col">
+            <div class="">
+              If timed, show timer.
+            </div>
           </div>
         </div>
       </div>
@@ -49,6 +76,7 @@
   <?php
   include('content/js/partials/app.php');
   include('content/js/partials/gameModel.php');
+  include('content/js/partials/boardViewModel.php');
   include('content/js/play.php')
   ?>
 
